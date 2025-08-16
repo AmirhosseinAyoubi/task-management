@@ -52,6 +52,7 @@ export const registerSchema = Joi.object({
             'any.only': 'Role must be one of: admin, manager, user'
         })
 });
+
 export const loginSchema = Joi.object({
     email: Joi.string()
         .email()
@@ -68,6 +69,7 @@ export const loginSchema = Joi.object({
             'any.required': 'Password is required'
         }),
 });
+
 export const changePasswordSchema = Joi.object({
     currentPassword:Joi.string()
         .min(6)
@@ -82,4 +84,12 @@ export const changePasswordSchema = Joi.object({
             'string.min': 'Password must be at least 6 characters long',
             'any.required': 'New password is required'
         }),
+});
+
+export const refreshTokenSchema = Joi.object({
+    refreshToken:Joi.string()
+        .required()
+        .messages({
+            'any.required': 'refresh token is required'
+        })
 });

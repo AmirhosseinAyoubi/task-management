@@ -1,7 +1,7 @@
 import {Router} from "express";
 import {validate} from "../middlewares/validate";
-import {changePassword, getProfile, login, register, updateProfile} from "../controllers/auth";
-import {changePasswordSchema, loginSchema, registerSchema} from "../validators/auth";
+import {changePassword, getProfile, login, refreshToken, register, updateProfile} from "../controllers/auth";
+import {changePasswordSchema, loginSchema, refreshTokenSchema, registerSchema} from "../validators/auth";
 import {authenticate} from "../middlewares/auth";
 import {updateProfileSchema} from "../validators/user";
 
@@ -263,6 +263,43 @@ AuthRoutes.put('/profile', authenticate, validate(updateProfileSchema),updatePro
  *             schema:
  */
 AuthRoutes.put('/change-password', authenticate,validate(changePasswordSchema), changePassword)
+
+/**
+ * @swagger
+ * /auth/refresh:
+ *   post:
+ *     summary: get new token
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 description: refreshToken
+ *                 example: "****"
+ *     responses:
+ *       200:
+ *         description: successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *
+ *       401:
+ *         description: invalid refresh token
+ *         content:
+ *           application/json:
+ *             schema:
+ */
+
+AuthRoutes.post('/refresh', authenticate,validate(refreshTokenSchema), refreshToken)
 
 
 

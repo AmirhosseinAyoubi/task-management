@@ -195,6 +195,50 @@ export const changePassword = asyncWrapper(async (req, res) => {
     return res.status(OK).json({
         success: true,
         data: {},
-        messages:['password has been updated successfully']
+        messages: ['password has been updated successfully']
     })
+})
+
+export const refreshToken = asyncWrapper(async (req, res) => {
+    const {refreshToken} = req.body
+    try {
+        const decoded = await jwt.verify(refreshToken, config.jwtRefreshSecret)
+        console.log(decoded)
+        const user = await User.findById(decoded?.userId)
+        if (!user) {
+            return res.status(BAD_REQUEST).json({
+                success: false,
+                messages: ['user not found']
+            })
+        }
+        const accessToken = generateAccessToken((user as any)._id.toString(), user.email, user.role)
+        return res.status(OK).json({
+            success: true,
+            message: 'Token updated successfully',
+            data: {
+                user: {
+                    id: (user as any)._id,
+                    username: user.username,
+                    email: user.email,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    role: user.role,
+                    isActive: user.isActive,
+                    createdAt: (user as any).createdAt
+                },
+                tokens: {
+                    accessToken,
+                    refreshToken
+                }
+            }
+        });
+    } catch (e) {
+        return res.status(UNAUTHORIZED
+        ).json({
+            success: false,
+            data: {},
+            messages: ['Refresh token is not valid']
+        })
+    }
+
 })
