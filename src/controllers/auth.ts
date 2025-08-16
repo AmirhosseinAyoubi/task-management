@@ -203,7 +203,6 @@ export const refreshToken = asyncWrapper(async (req, res) => {
     const {refreshToken} = req.body
     try {
         const decoded = await jwt.verify(refreshToken, config.jwtRefreshSecret)
-        console.log(decoded)
         const user = await User.findById(decoded?.userId)
         if (!user) {
             return res.status(BAD_REQUEST).json({
