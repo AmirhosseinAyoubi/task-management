@@ -2,8 +2,8 @@ import {Router} from "express";
 import {authenticate, authorize} from "../middlewares/auth";
 import {ROLES, ValidateLocation} from "../constants/enums";
 import {validate} from "../middlewares/validate";
-import {createNewUserSchema, userQuerySchema} from "../validators/user";
-import {createUser, getAllUsers, getStats} from "../controllers/users";
+import {createNewUserSchema, getTeamSchema, userQuerySchema} from "../validators/user";
+import {createUser, getAllUsers, getStats, getTeamMembers} from "../controllers/users";
 
 const UserRoutes = Router()
 
@@ -192,6 +192,44 @@ UserRoutes.post('/',authorize([ROLES.ADMIN]),validate(createNewUserSchema),creat
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-UserRoutes.get('/stats',authorize([ROLES.ADMIN]),getStats)
+UserRoutes.get('/stats',authorize([ROLES.ADMIN]),validate(userQuerySchema,ValidateLocation.QUERY),getStats)
+
+/**
+ * @swagger
+ * /user/team/{id}:
+ *   get:
+ *     summary: get team members (admins and managers only)
+ *     tags: [User]
+ *     parameters:
+ *         - in: path
+ *           name: id
+ *           schema:
+ *             type: string
+ *           required: true
+ *           description: manager id
+ *     responses:
+ *       200:
+ *         description: team members retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *       429:
+ *         description: Access denied
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+UserRoutes.get('/team/:id',authorize([ROLES.ADMIN,ROLES.MANAGER]),validate(getTeamSchema,ValidateLocation.PARAMS),getTeamMembers)
 
 export default UserRoutes

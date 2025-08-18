@@ -152,3 +152,12 @@ export const createNewUserSchema = Joi.object({
         })
 
 })
+export const getTeamSchema = Joi.object({
+    id:Joi.string()
+        .required()
+        .messages({
+            'any.required': 'manager id is required'
+        }),
+
+
+})

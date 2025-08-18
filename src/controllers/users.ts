@@ -1,6 +1,7 @@
 import {Request, Response} from "express";
 import User from "../models/user";
-import {BAD_REQUEST, CREATED, OK} from "../constants/statusCodes";
+import {BAD_REQUEST, CREATED, NOT_FOUND, OK} from "../constants/statusCodes";
+import {asyncWrapper} from "../middlewares/asyncWrapper";
 
 export const getAllUsers = async (req: Request, res: Response) => {
     const {
@@ -137,3 +138,25 @@ export const getStats = async (req: Request, res: Response) => {
         }
     })
 }
+
+export const getTeamMembers =asyncWrapper(async (req: Request, res: Response) => {
+    const {id}=req.params;
+
+    console.log(id)
+    const manager=await User.findById(id)
+        .select('-password')
+        .populate('team','username email firstName lastName role')
+    if(!manager){
+        res.status(NOT_FOUND).json({
+            success:false,
+            message:'Manager not found'
+        })
+    }
+
+    res.status(OK).json({
+        success: true,
+        data: {
+            team: manager.team
+        }
+    })
+})
