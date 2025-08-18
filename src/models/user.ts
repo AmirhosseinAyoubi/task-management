@@ -1,12 +1,9 @@
 import mongoose, {Document, Schema} from "mongoose";
 import {emailValidationRe} from "../constants/regexes";
 import bcrypt from 'bcryptjs'
+import {ROLES} from "../constants/enums";
 
-enum UserRoles {
-    ADMIN = 'admin',
-    USER = 'user',
-    MANAGER = 'manager'
-}
+
 
 export interface IUser extends Document {
     username: string,
@@ -14,7 +11,7 @@ export interface IUser extends Document {
     password: string
     firstName?: string,
     lastName?: string,
-    role: UserRoles,
+    role: ROLES,
     team: mongoose.Types.ObjectId[],
     isActive: boolean,
     lastLogin?: Date,
@@ -62,8 +59,8 @@ const userSchema = new Schema<IUser>({
     },
     role: {
         type: String,
-        enum: Object.values(UserRoles),
-        default: UserRoles.USER
+        enum: Object.values(ROLES),
+        default: ROLES.USER
     },
     team: [{
         type: Schema.Types.ObjectId,

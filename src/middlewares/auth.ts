@@ -1,8 +1,9 @@
 import {NextFunction, Request, Response} from "express";
 import jwt from 'jsonwebtoken'
 import User, {IUser} from "../models/user";
-import {UNAUTHORIZED} from "../constants/statusCodes";
+import {ACCESS_DENIED, BAD_REQUEST, UNAUTHORIZED} from "../constants/statusCodes";
 import {config} from "../configs";
+import {ROLES} from "../constants/enums";
 
 declare global {
     namespace Express {
@@ -23,7 +24,7 @@ interface jwtPayload {
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const authHeader = req.headers.authorization
-        const token = authHeader.substring(7)
+        const token = authHeader?.substring(7)
         if (!authHeader || !authHeader?.startsWith('Bearer ') || !token) {
             return res.status(UNAUTHORIZED).json({
                 success: false,
@@ -65,5 +66,33 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
             success: false,
             message: 'Authentication failed. Please try again.'
         });
+    }
+}
+export const authorize = (roles:Array<ROLES>) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        try{
+            if (!req.user) {
+                return res.status(UNAUTHORIZED).json({
+                    success: false,
+                    message: 'Authentication required'
+                });
+            }
+            const userRole=req.user?.role
+            if(!roles.includes(userRole)){
+                return res.status(ACCESS_DENIED).json({
+                    success:false,
+                    messages:['access denied']
+                })
+
+            }
+            next()
+        }
+        catch (e) {
+            return res.status(BAD_REQUEST).json({
+                success:false,
+                messages:['Authorization failed']
+            })
+        }
+
     }
 }

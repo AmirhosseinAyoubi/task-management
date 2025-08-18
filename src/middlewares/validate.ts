@@ -1,13 +1,8 @@
 import {Schema} from "joi";
 import {NextFunction, Request, Response} from "express";
-import {STATUS_CODES} from "http";
 import {BAD_REQUEST} from "../constants/statusCodes";
+import {ValidateLocation} from "../constants/enums";
 
-enum ValidateLocation {
-    BODY = 'body',
-    QUERY = 'query',
-    PARAMS = 'params'
-}
 
 export const validate = (schema: Schema, location: ValidateLocation = ValidateLocation.BODY) => {
     return (req: Request, res: Response, next: NextFunction) => {
@@ -29,12 +24,14 @@ export const validate = (schema: Schema, location: ValidateLocation = ValidateLo
                 errors
             })
         }
-
-        req[location] = value
+        if (location === ValidateLocation.BODY) req[location] = value
         next();
-
     }
 }
+
+
+
+
 
 
 

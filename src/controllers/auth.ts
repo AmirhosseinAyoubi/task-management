@@ -241,3 +241,11 @@ export const refreshToken = asyncWrapper(async (req, res) => {
     }
 
 })
+
+export const logout = asyncWrapper(async (req, res) => {
+    res.json({
+        success: true,
+        message: 'Logged out successfully'
+    });
+
+})

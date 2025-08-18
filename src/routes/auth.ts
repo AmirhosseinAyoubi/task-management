@@ -1,6 +1,6 @@
 import {Router} from "express";
 import {validate} from "../middlewares/validate";
-import {changePassword, getProfile, login, refreshToken, register, updateProfile} from "../controllers/auth";
+import {changePassword, getProfile, login, logout, refreshToken, register, updateProfile} from "../controllers/auth";
 import {changePasswordSchema, loginSchema, refreshTokenSchema, registerSchema} from "../validators/auth";
 import {authenticate} from "../middlewares/auth";
 import {updateProfileSchema} from "../validators/user";
@@ -300,6 +300,23 @@ AuthRoutes.put('/change-password', authenticate,validate(changePasswordSchema), 
  */
 
 AuthRoutes.post('/refresh', authenticate,validate(refreshTokenSchema), refreshToken)
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: logout
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: successful
+ *         content:
+ *           application/json:
+ *             schema:
+ */
+AuthRoutes.post('/logout', logout)
 
 
 
